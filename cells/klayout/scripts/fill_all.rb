@@ -105,4 +105,9 @@ require_relative 'fill_metal.rb'
 
 puts "Done!"
 
+# Drop fill patterns that were never instantiated, leaving the input's top cell.
+$ly.top_cells.map(&:cell_index).each do |index|
+  $ly.delete_cell(index) if index != $top_cell.cell_index
+end
+
 $ly.write($output)
