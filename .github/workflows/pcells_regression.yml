@@ -37,6 +37,28 @@ jobs:
             -o klayout_0.30.12-1_amd64.deb \
             https://www.klayout.org/downloads/Ubuntu-24/klayout_0.30.12-1_amd64.deb
 
+  fill_testing:
+    runs-on: ubuntu-24.04
+    needs: [setup_klayout]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Restore KLayout .deb from cache
+        uses: actions/cache@v5
+        with:
+          path: klayout_0.30.12-1_amd64.deb
+          key: klayout-deb-cache-ubuntu-0.30.12
+
+      - name: Install KLayout
+        run: sudo apt-get update && sudo apt-get install -y ./klayout_0.30.12-1_amd64.deb
+
+      - name: Install Python packages
+        run: python3 -m pip install --break-system-packages pytest klayout
+
+      - name: Fill script regression
+        run: make test-fill
+
   nfet_03v3_pcells_testing:
     runs-on: ubuntu-24.04
     needs: [setup_klayout]
